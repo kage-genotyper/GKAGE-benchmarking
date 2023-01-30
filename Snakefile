@@ -1,17 +1,17 @@
 configfile: "config/config.yaml"
 
 
-rule produce_kage_benchmark_report:
+rule make_report:
   input:
     gpu_kmer_mapper="data/benchmarks/{sample}.gpu_kmer_mapper.txt",
     cpu_kmer_mapper="data/benchmarks/{sample}.cpu_kmer_mapper.txt",
     kage="data/benchmarks/{sample}.kage.txt"
   output:
-    report="{sample}.benchmark_report.html"
+    report="{sample}.benchmark_report.txt"
   shell:
     """
     python create_benchmark_report.py \
-        {input.gpu_kmer_mapper} {input.cpu_kmer_mapper} {input.kage}
+        {input.gpu_kmer_mapper} {input.cpu_kmer_mapper} {input.kage} {output}
     """
 
 
@@ -31,7 +31,7 @@ rule run_kage:
         -i {input.kmer_index} \
         -k {config[kmer_size]} \
         -a 15 \
-        -t {config[n_threads_few]} \
+        -t {config[n_threads]} \
         -b True \
         -o {output.vcf} \
         --variants {input.variants} \
@@ -51,7 +51,7 @@ rule run_gpu_kmer_mapper:
     """kmer_mapper map \
         -i {input.kmer_index} \
         -f {input.reads} \
-        -t {config[n_threads_few]} \
+        -t {config[n_threads]} \
         -k {config[kmer_size]} \
         -c {config[gpu_chunk_size]} \
         -o {output.counts} \
@@ -72,7 +72,7 @@ rule run_cpu_kmer_mapper:
     """kmer_mapper map \
         -i {input.kmer_index} \
         -f {input.reads} \
-        -t {config[n_threads_few]} \
+        -t {config[n_threads]} \
         -k {config[kmer_size]} \
         -c {config[cpu_chunk_size]} \
         -o {output.counts}
