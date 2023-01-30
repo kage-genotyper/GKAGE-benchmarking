@@ -5,18 +5,21 @@ n_threads_several: 16
 n_threads_many: 32
 
 gpu_chunk_size: 10000000
-cpu_chunk_size: 5000000 
+cpu_chunk_size: 5000000
 
-test_reads_zipped_dl_link: "https://zenodo.org/record/7582195/files/hg002_simulated_reads_15x.fa.gz?download=1"
-test_index_minimal_dl_link: "https://zenodo.org/record/7582195/files/index_2548all_uncompressed_minimal.npz?download=1"
-test_index_vars_w_revcomps_dl_link: "https://zenodo.org/record/7582195/files/kmer_index_only_variants_with_revcomp.npz?download=1"
-test_index_vars_wo_revcomps_dl_link: "https://zenodo.org/record/7582195/files/kmer_index_only_variants_without_revcomp.npz?download=1"
-test_vars_dl_link: "https://zenodo.org/record/7582195/files/numpy_variants.npz?download=1"
+# global setup
+#data_url: "https://zenodo.org/record/7582195/files/"
+#data_url_postfix: "?download=1"
 
-test_reads_zipped: "temp/hg002_simulated_reads_15x.fa.gz"
-test_index_minimal: "temp/index_2548all_uncompressed_minimal.npz"
-test_index_vars_w_revcomps: "temp/temp/kmer_index_only_variants_with_revcomp.npz"
-test_index_vars_wo_revcomps: "temp/kmer_index_only_variants_without_revcomp.npz"
-test_vars: "temp/numpy_variants.npz"
+# local setup
+data_url: "/home/ivargry/dev/sync/kage/tests/whole_genome"
+data_url_postfix: ""
 
-test_reads: "temp/hg002_simulated_reads_15x.fa"
+
+test_reads_zipped: "data/input_files/hg002_simulated_reads_15x.fa.gz"
+test_index_minimal: "data/input_files/index_2548all_uncompressed_minimal.npz"
+test_index_vars_w_revcomps: "data/input_files/kmer_index_only_variants_with_revcomp.npz"
+test_index_vars_wo_revcomps: "data/input_files/kmer_index_only_variants_without_revcomp.npz"
+test_vars: "data/input_files/numpy_variants.npz"
+
+test_reads: "data/hg002_simulated_reads_15x.fa"
