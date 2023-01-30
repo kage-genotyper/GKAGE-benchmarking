@@ -56,6 +56,7 @@ rule run_gpu_kmer_mapper:
         -c {config[gpu_chunk_size]} \
         -o {output.counts} \
         --gpu True \
+        --gpu-hash-map-size {config[gpu_hash_map_size]} \
         --map-reverse-complements True
     """
 
