@@ -17,11 +17,6 @@ run_cpu_kmer_mapper:
 
 clean:
 	$(RM) -rf \
-		files/produced/gpu_kmer_counts.npy \
-		files/produced/cpu_kmer_counts.npy \
-		files/produced/genotypes.vcf \
-		files/benchmarks/gpu_kmer_mapper.txt \
-		files/benchmarks/cpu_kmer_mapper.txt \
-		files/benchmarks/kage.txt \
+		rm -rf temp/ \
 		benchmark_report.html
 

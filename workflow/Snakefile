@@ -3,9 +3,9 @@ configfile: "config/config.yaml"
 
 rule produce_kage_benchmark_report:
   input:
-    gpu_kmer_mapper="files/benchmarks/gpu_kmer_mapper.txt",
-    cpu_kmer_mapper="files/benchmarks/cpu_kmer_mapper.txt",
-    kage="files/benchmarks/kage.txt",
+    gpu_kmer_mapper="temp/benchmarks/gpu_kmer_mapper.txt",
+    cpu_kmer_mapper="temp/benchmarks/cpu_kmer_mapper.txt",
+    kage="temp/benchmarks/kage.txt"
   output:
     report="benchmark_report.html"
   shell:
@@ -17,13 +17,13 @@ rule produce_kage_benchmark_report:
 
 rule run_kage:
   input:
-    counts="files/produced/cpu_kmer_counts.npy",
-    kmer_index="files/inputs/index_2548all_uncompressed_minimal.npz",
-    variants="files/inputs/numpy_variants.npz"
+    counts="temp/cpu_kmer_counts.npy",
+    kmer_index="{config[test_index_minimal]}",
+    variants="{config[test_vars]}"
   output:
-    vcf="files/produced/genotypes.vcf",
+    vcf="temp/genotypes.vcf"
   benchmark:
-    "files/benchmarks/kage.txt"
+    "temp/benchmarks/kage.txt"
   shell:
     """
     kage genotype \
@@ -41,12 +41,12 @@ rule run_kage:
 
 rule run_gpu_kmer_mapper:
   input:
-    kmer_index="files/inputs/kmer_index_only_variants_with_revcomp.npz",
-    reads="files/inputs/hg002_simulated_reads_15x.fa"
+    kmer_index="{config[test_index_vars_w_revcomps]}",
+    reads="{config[test_reads]}"
   output:
-    counts="files/produced/gpu_kmer_counts.npy",
+    counts="temp/gpu_kmer_counts.npy",
   benchmark:
-    "files/benchmarks/gpu_kmer_mapper.txt"
+    "temp/benchmarks/gpu_kmer_mapper.txt"
   shell:
     """kmer_mapper map \
         -i {input.kmer_index} \
@@ -61,12 +61,12 @@ rule run_gpu_kmer_mapper:
 
 rule run_cpu_kmer_mapper:
   input:
-    kmer_index="files/inputs/kmer_index_only_variants_with_revcomp.npz",
-    reads="files/inputs/hg002_simulated_reads_15x.fa"
+    kmer_index="{config[test_index_vars_w_revcomps]}",
+    reads="{config[test_reads]}"
   output:
-    counts="files/produced/cpu_kmer_counts.npy",
+    counts="temp/cpu_kmer_counts.npy",
   benchmark:
-    "files/benchmarks/cpu_kmer_mapper.txt"
+    "temp/benchmarks/cpu_kmer_mapper.txt"
   shell:
     """kmer_mapper map \
         -i {input.kmer_index} \
@@ -77,3 +77,32 @@ rule run_cpu_kmer_mapper:
         -o {output.counts}
     """
 
+
+rule unzip_fastas:
+  input:
+    "{config[test_reads_zipped]}"
+  output:
+    "{config[test_reads]}"
+  shell:
+    """
+    gunzip *.fa.gz
+    """
+
+
+rule download_files:
+  output:
+    "{config[test_reads_zipped]}",
+    "{config[test_index_minimal]}",
+    "{config[test_index_vars_w_revcomps]}",
+    "{config[test_index_vars_wo_revcomps]}",
+    "{config[test_vars]}"
+  shell:
+    """
+    mkdir temp/
+    mkdir temp/benchmarks/
+    wget -P temp/ {config[test_reads_zipped_dl_link]}
+    wget -P temp/ {config[test_index_minimal_dl_link]}
+    wget -P temp/ {config[test_index_vars_w_revcomps_dl_link]}
+    wget -P temp/ {config[test_index_vars_wo_revcomps_dl_link]}
+    wget -P temp/ {config[test_vars_dl_link]}
+    """
