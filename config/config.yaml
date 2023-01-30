@@ -1,0 +1,8 @@
+kmer_size: 31
+
+n_threads_few: 6
+n_threads_several: 16
+n_threads_many: 32
+
+gpu_chunk_size: 10000000
+cpu_chunk_size: 5000000 
