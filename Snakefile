@@ -5,7 +5,8 @@ rule make_report:
   input:
     gpu_kmer_mapper="data/benchmarks/{sample}.gpu_kmer_mapper.txt",
     cpu_kmer_mapper="data/benchmarks/{sample}.cpu_kmer_mapper.txt",
-    kage="data/benchmarks/{sample}.kage.txt"
+    kage="data/benchmarks/{sample}.kage.txt",
+    asserted_counts_equal="data/{sample}.asserted_counts_equal.txt"
   output:
     report="{sample}.benchmark_report.txt"
   shell:
@@ -17,7 +18,7 @@ rule make_report:
 
 rule run_kage:
   input:
-    counts="data/{sample}.cpu_kmer_counts.npy",
+    counts="data/{sample}.gpu_kmer_counts.npy",
     kmer_index="data/input_files/index_2548all_uncompressed_minimal.npz",
     variants="data/input_files/numpy_variants.npz"
   output:
@@ -37,6 +38,21 @@ rule run_kage:
         --variants {input.variants} \
         --do-not-write-genotype-likelihoods True
     """
+
+
+rule assert_counts_equal:
+  input:
+    gpu_counts="data/{sample}.gpu_kmer_counts.npy",
+    cpu_counts="data/{sample}.cpu_kmer_counts.npy"
+  output:
+    "data/{sample}.asserted_counts_equal.txt"
+  run:
+    import numpy as np
+    gpu_counts = np.load({input.gpu_counts})
+    cpu_counts = np.load({input.cpu_counts})
+    assert np.all(gpu_counts == cpu_counts)
+    with open({output}, "w") as f:
+        f.write("")
 
 
 rule run_gpu_kmer_mapper:
@@ -76,7 +92,8 @@ rule run_cpu_kmer_mapper:
         -t {config[n_threads]} \
         -k {config[kmer_size]} \
         -c {config[cpu_chunk_size]} \
-        -o {output.counts}
+        -o {output.counts} \
+	--debug True
     """
 
 
@@ -99,5 +116,5 @@ rule download:
   output:
     "data/input_files/{file}"
   shell:
-    "rsync -aP {config[data_url]}/{wildcards.file}{config[data_url_postfix]} {output}"
+    "wget -O {output} {config[data_url]}/{wildcards.file}{config[data_url_postfix]}"
 

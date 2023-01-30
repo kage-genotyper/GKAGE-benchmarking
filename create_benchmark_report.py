@@ -36,4 +36,5 @@ all_data = [
 table = tabulate(all_data, headers="firstrow", tablefmt="github")
 
 with open(OUTPUT_REPORT, "w") as f:
+    f.writeline("Asserted that GPU and CPU counts were equal")
     f.write(table)

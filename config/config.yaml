@@ -1,17 +1,17 @@
 kmer_size: 31
-n_threads: 6
+n_threads: 16
 
-gpu_chunk_size: 10000000
-cpu_chunk_size: 5000000
+gpu_chunk_size: 50000000
+cpu_chunk_size: 50000000
 gpu_hash_map_size: 0  # 0 means cucounter decides
 
 # global setup
-data_url: "https://zenodo.org/record/7582195/files/"
+data_url: "https://zenodo.org/record/7582195/files"
 data_url_postfix: "?download=1"
 
 # local setup
-data_url: "/home/ivargry/dev/sync/kage/tests/whole_genome"
-data_url_postfix: ""
+#data_url: "/home/ivargry/dev/sync/kage/tests/whole_genome"
+#data_url_postfix: ""
 
 test_reads_zipped: "data/input_files/hg002_simulated_reads_15x.fa.gz"
 test_index_minimal: "data/input_files/index_2548all_uncompressed_minimal.npz"
