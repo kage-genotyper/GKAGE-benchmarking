@@ -13,7 +13,7 @@ cmake ..
 make
 mkdir gerbil_temp_files
 ```
-4) Run the Snakemake pipeline from the GKAGE-benchmarking root directory:
+5) Run the Snakemake pipeline from the GKAGE-benchmarking root directory:
 ```bash
 snakemake --cores 1 hg002_simulated_reads_15x.benchmark_report.txt
 ```
