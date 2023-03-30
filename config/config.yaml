@@ -1,9 +1,10 @@
 kmer_size: 31
-n_threads: 16
+n_threads: 6
 
-gpu_chunk_size: 50000000
-cpu_chunk_size: 50000000
+gpu_chunk_size: 10000000 
+cpu_chunk_size: 5000000
 gpu_hash_map_size: 0  # 0 means cucounter decides
+gerbil_min_frequency: 1 # minimum required observed frequency for a kmer to be included in the output file
 
 # global setup
 data_url: "https://zenodo.org/record/7582195/files"

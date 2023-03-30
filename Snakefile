@@ -5,6 +5,7 @@ rule make_report:
   input:
     gpu_kmer_mapper="data/benchmarks/{sample}.gpu_kmer_mapper.txt",
     cpu_kmer_mapper="data/benchmarks/{sample}.cpu_kmer_mapper.txt",
+    gerbil="data/benchmarks/{sample}.gerbil.txt",
     kage="data/benchmarks/{sample}.kage.txt",
     asserted_counts_equal="data/{sample}.asserted_counts_equal.txt"
   output:
@@ -12,7 +13,7 @@ rule make_report:
   shell:
     """
     python create_benchmark_report.py \
-        {input.gpu_kmer_mapper} {input.cpu_kmer_mapper} {input.kage} {output}
+        {input.gpu_kmer_mapper} {input.cpu_kmer_mapper} {input.gerbil} {input.kage} {output}
     """
 
 
@@ -48,11 +49,32 @@ rule assert_counts_equal:
     "data/{sample}.asserted_counts_equal.txt"
   run:
     import numpy as np
-    gpu_counts = np.load({input.gpu_counts})
-    cpu_counts = np.load({input.cpu_counts})
+    gpu_counts = np.load(input.gpu_counts)
+    cpu_counts = np.load(input.cpu_counts)
     assert np.all(gpu_counts == cpu_counts)
-    with open({output}, "w") as f:
+    with open(output[0], "w") as f:
         f.write("")
+
+
+rule run_gerbil:
+  input:
+    reads="data/input_files/{sample}.fa"
+  output:
+    counts="data/{sample}.gerbil_kmer_counts.bin",
+  benchmark:
+    "data/benchmarks/{sample}.gerbil.txt"
+  shell:
+    """
+    ./gerbil/build/gerbil \
+        -k {config[kmer_size]} \
+        -t {config[n_threads]} \
+        -l {config[gerbil_min_frequency]} \
+        -g \
+        -o gerbil \
+        {input.reads} \
+        gerbil/build/gerbil_temp_files/ \
+        {output.counts}
+    """
 
 
 rule run_gpu_kmer_mapper:
@@ -93,7 +115,6 @@ rule run_cpu_kmer_mapper:
         -k {config[kmer_size]} \
         -c {config[cpu_chunk_size]} \
         -o {output.counts} \
-	--debug True
     """
 
 
